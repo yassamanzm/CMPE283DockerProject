@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Charts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+
+    <script src="//www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="//www.amcharts.com/lib/3/serial.js"></script>
+    <script src="//www.amcharts.com/lib/3/themes/light.js"></script>
+
+    <style>
+        body {
+            background-color: rgba(205, 238, 253, 0.41);
+        }
+    </style>
+</head>
+
+<body ng-app="chartApp">
+<div class="w3-container">
+    <div class="w3-container w3-black w3-left-align w3-allerta">
+        <p class="w3-xlarge w3-text-shadow">Stats</p>
+        <a href="#containers">Containers</a>
+        <a href="#create">Create</a>
+        <a href="#stats">Stats</a>
+
+        <div ng-view></div>
+    </div>
+    <br/>
+    <div>
+        <form class="w3-large">
+            <b>Metric</b> &#128207;:
+            <select ng-model="metric" class="w3-round">
+                <option value="">
+                <option value="cpu">CPU
+                <option value="memory">Memory
+            </select>
+        </form>
+    </div>
+    <br/>
+    <div ng-switch="metric">
+        <div ng-switch-when="cpu">
+            <div class="w3-container w3-white">
+                <chart-elem></chart-elem>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var chartAppVar = angular.module('chartApp', ["ngRoute"]);
+    chartAppVar.config(function ($routeProvider) {
+        $routeProvider
+            .when("/", {
+                templateUrl: "index.html"
+            })
+            .when("/create", {
+                templateUrl: "app/views/create.html"
+            })
+            .when("/containers", {
+                templateUrl: "app/views/containers,html"
+            })
+            .when("/stats", {
+                templateUrl: "app/views/charts.html"
+            });
+    });
+
+//    var chartData = [];
+//    app.controller('chartCtrl', function ($scope, $http) {
+//        $http.get("http://www.w3schools.com/angular/customers.php")
+//            .then(function (response) {
+//                chartData.push({
+//                    "date": newDate,
+//                    "visits": visits
+//                });
+//            });
+//    });
+
+    chartAppVar.directive('chartElem',
+        function () {
+            return {
+                restrict: 'E',
+                replace: true,
+
+                template: '<div id="chartdiv" style="min-width: 310px; height: 400px; margin: 0 auto"></div>',
+                link: function (scope, element, attrs) {
+
+                    var chart = false;
+
+                    /**
+                     * Init some variables for demo purposes
+                     */
+                    var day = 0;
+                    var firstDate = new Date();
+                    firstDate.setDate(firstDate.getDate() - 500);
+
+                    /**
+                     * Function that generates random data
+                     */
+                    function generateChartData() {
+                        var chartData = [];
+                        for (day = 0; day < 50; day++) {
+                            var newDate = new Date(firstDate);
+                            newDate.setDate(newDate.getDate() + day);
+
+//                            $http.get("http://www.w3schools.com/angular/customers.php")
+//                                .then(function (response) {
+//                                    $scope.containers = response.data.records;
+//                                });
+
+                            var visits = Math.round(Math.random() * 40) - 20;
+
+                            chartData.push({
+                                "date": newDate,
+                                "visits": visits
+                            });
+                        }
+
+                        return chartData;
+                    }
+
+                    var initChart = function () {
+                        if (chart) chart.destroy();
+                        var config = scope.config || {};
+                        /**
+                         * Create the chart
+                         */
+                        var chart = AmCharts.makeChart("chartdiv", {
+                            "type": "serial",
+                            "theme": "light",
+                            "zoomOutButton": {
+                                "backgroundColor": '#000000',
+                                "backgroundAlpha": 0.15
+                            },
+                            "dataProvider": generateChartData(),
+                            "categoryField": "date",
+                            "categoryAxis": {
+                                "parseDates": true,
+                                "minPeriod": "DD",
+                                "dashLength": 1,
+                                "gridAlpha": 0.15,
+                                "axisColor": "#DADADA"
+                            },
+                            "graphs": [{
+                                "id": "g1",
+                                "valueField": "visits",
+                                "bullet": "round",
+                                "bulletBorderColor": "#FFFFFF",
+                                "bulletBorderThickness": 2,
+                                "lineThickness": 2,
+                                "lineColor": "#24b506",
+                                "negativeLineColor": "#0352b5",
+                                "hideBulletsCount": 50
+                            }],
+                            "chartCursor": {
+                                "cursorPosition": "mouse"
+                            },
+                            "chartScrollbar": {
+                                "graph": "g1",
+                                "scrollbarHeight": 40,
+                                "color": "#FFFFFF",
+                                "autoGridCount": true
+                            }
+                        })
+
+                        /**
+                         * Set interval to push new data points periodically
+                         */
+                        // set up the chart to update every second
+                        setInterval(function () {
+                            // normally you would load new datapoints here,
+                            // but we will just generate some random values
+                            // and remove the value from the beginning so that
+                            // we get nice sliding graph feeling
+
+                            // remove datapoint from the beginning
+                            chart.dataProvider.shift();
+
+                            // add new one at the end
+                            day++;
+                            var newDate = new Date(firstDate);
+                            newDate.setDate(newDate.getDate() + day);
+                            var visits = Math.round(Math.random() * 40) - 20;
+                            chart.dataProvider.push({
+                                date: newDate,
+                                visits: visits
+                            });
+                            chart.validateData();
+                        }, 1000);
+                    };
+                    initChart();
+
+                }//end watch
+            }
+        });
+</script>
+</body>
