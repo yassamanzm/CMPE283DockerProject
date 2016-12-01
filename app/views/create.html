@@ -56,12 +56,12 @@
                             <th></th>
                             <th></th>
                         </tr>
-                        <tr ng-repeat="c in images | orderBy : 'Country'">
-                            <td>{{ c.Country }}</td>
-                            <td>{{ c.City }}</td>
+                        <tr ng-repeat="c in images | orderBy : 'name'">
+                            <td>{{ c.name }}</td>
+                            <td>{{ c.description }}</td>
                             <td>
                                 <button class="w3-btn w3-btn-floating w3-teal  w3-ripple"
-                                        ng-click="download(c.Name, c.Country)">&#x2b73;</button>
+                                        ng-click="download(c.name, 'latest')">&#x2b73;</button>
                             </td>
                             <td><i ng-style="spinnerIcon" class="fa fa-spinner fa-spin"
                                    style="font-size:24px;color:darkslategrey"></i></td>
@@ -84,9 +84,9 @@
                             <th></th>
                             <th></th>
                         </tr>
-                        <tr ng-repeat="c in images | orderBy : 'Name'">
-                            <td>{{ c.Name }}</td>
-                            <td>{{ c.Country }}</td>
+                        <tr ng-repeat="c in images | orderBy : 'name'">
+                            <td>{{ c.name}}</td>
+                            <td>{{ c.description }}</td>
                             <td>
                                 <button class="w3-btn w3-btn-floating w3-teal  w3-ripple"
                                         ng-click="create(c.Name, c.Country)">&#x27a4;</button>
@@ -145,19 +145,40 @@
             .then(function (response) {
                 $scope.images = response.data.records;
             });
-        $scope.searchImage = function (token) {
+        $scope.searchImage = function () {
             $scope.showSearchResults = true;
             $scope.searchSpinnerIcon = {'visibility': 'visible'};
+//
+//            if ($scope.imagename == "john") {
+//                $scope.imagename = "true";
+//            }
+            $http({
+                method: 'POST',
+                url: 'http://localhost:3000/crud/getContainer',
+                data: {'ContainerName' : $scope.imagename},
+                headers: {'Content-Type': 'application/json'}
+            }).success(function(data, status, headers, config) {
+                // this callback will be called asynchronously
+                // when the response is available
+                $scope.images = data;
+                log.console(data);
+                $scope.searchSpinnerIcon = {'visibility': 'hidden'};
+            }).
+            error(function(data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
 
-            if ($scope.imagename == "john") {
-                $scope.imagename = "true";
-            }
 
-            $http.get("http://www.w3schools.com/angular/customers.php")
-                .then(function (response) {
-                    $scope.images = response.data.records;
-                    $scope.searchSpinnerIcon = {'visibility': 'hidden'};
-                });
+            //then(function (response) {
+              //  $scope.images = response.data;
+            //});
+
+//            $http.post("http://localhost:3000")
+//                .then(function (response) {
+//                    $scope.images = response.data.records;
+//                    $scope.searchSpinnerIcon = {'visibility': 'hidden'};
+//                });
         };
         $scope.create = function (name, tag) {
             $scope.isCreating = true;
