@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Create</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.9/angular.js"></script>
+    <style>
+        body {
+            background-color: rgba(205, 238, 253, 0.41)
+        }
+    </style>
+</head>
+
+<body ng-app="downloadImageApp" ng-controller="downloadImageCtrl">
+<div class="w3-container">
+    <div class="w3-container w3-black w3-left-align w3-allerta">
+        <p class="w3-xlarge w3-text-shadow">Download Image</p>
+    </div>
+    <br/>
+    <div align="center">
+        Image &#128270;: <input class="w3-border w3-round" type="text" ng-model="imagename">
+        <button class="w3-btn w3-grey w3-ripple w3-round" ng-click="searchImage()">Search</button>
+        <td><i ng-style="searchSpinnerIcon" class="fa fa-spinner fa-spin"
+               style="font-size:24px;color:darkslategrey"></i></td>
+    </div>
+    <br/>
+    <div class="w3-container">
+        <div class="w3-card-8">
+            <div class="w3-container w3-orange">
+                <h2>Image</h2>
+            </div>
+            <table ng-if="showSearchResults" class="w3-table w3-bordered w3-striped">
+                <tr class="w3-grey">
+                    <th>Name</th>
+                    <th>Tag</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr ng-repeat="c in images | orderBy : 'name'">
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.description }}</td>
+                    <td>
+                        <button class="w3-btn w3-btn-floating w3-teal  w3-ripple"
+                                ng-click="download(c.name, 'latest')">&#x2b73;</button>
+                    </td>
+                    <td><i ng-style="downloadSpinnerIcon" class="fa fa-spinner fa-spin"
+                           style="font-size:24px;color:darkslategrey"></i></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    var app = angular.module('downloadImageApp', []);
+    app.controller('downloadImageCtrl', function ($scope, $http) {
+        $scope.showSearchResults = false
+        $scope.downloadSpinnerIcon = {'visibility': 'hidden'};
+        $scope.searchSpinnerIcon = {'visibility': 'hidden'};
+
+        $scope.searchImage = function () {
+            $scope.showSearchResults = true;
+            $http({
+                method: 'POST',
+                url: 'http://localhost:3000/crud/getContainer',
+                data: {'ContainerName': $scope.imagename},
+                headers: {'Content-Type': 'application/json'}
+            }).success(function (data, status, headers, config) {
+                // this callback will be called asynchronously
+                // when the response is available
+                $scope.images = data;
+                log.console(data);
+            }).error(function (data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+        };
+    });
+</script>
+</body>
