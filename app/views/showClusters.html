@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>Containers</title>
+    <title>Clusters</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
@@ -18,62 +18,57 @@
     </style>
 </head>
 
-<body ng-app="containerInfoApp" ng-controller="containerCtrl">
+<body ng-app="clusterInfoApp" ng-controller="clusterCtrl">
 <div class="w3-container">
     <div class="w3-container w3-black w3-left-align w3-allerta">
-        <p class="w3-xlarge w3-text-shadow">Containers</p>
+        <p class="w3-xlarge w3-text-shadow">Clusters</p>
     </div>
     <br/>
     <table class="w3-table w3-bordered w3-striped">
         <tr class="w3-grey">
             <th>ID</th>
             <th>Name</th>
-            <th>Image</th>
-            <th>Command</th>
-            <th>Port</th>
             <th>Status</th>
             <th>Operation</th>
             <th></th>
             <th></th>
             <th></th>
         </tr>
-        <tr ng-repeat="c in containers | orderBy : 'Name'">
+        <tr ng-repeat="c in clusters | orderBy : 'Name'">
             <td>{{ c.Name }}</td>
             <td>{{ c.Country }}</td>
-            <td>{{ c.Country }}</td>
-            <td>{{ c.Name }}</td>
-            <td>{{ c.Country }}</td>
-            <td>{{ c.Country }}</td>
+            <td>{{ c.City }}</td>
+            <!-- FIX ng-if conditions the current ones are for test -->
             <td ng-if="c.Country == 'Germany'">
-                <button class="w3-btn w3-btn-floating w3-green  w3-ripple" ng-click="editContainer('start')">
+                <button class="w3-btn w3-btn-floating w3-green  w3-ripple" ng-click="editCluster('start')">
                     &#x25ba;</button>
             </td>
             <td ng-if="c.Country == 'Mexico'">
-                <button class="w3-btn w3-btn-floating w3-red w3-ripple" ng-click="editContainer('stop')">
+                <button class="w3-btn w3-btn-floating w3-red w3-ripple" ng-click="editCluster('stop')">
                     &#x25A1;</button>
             </td>
             <td ng-if="c.Country == 'France'">
-                <button class="w3-btn w3-btn-floating w3-grey w3-ripple" ng-click="editContainer('restart')">
+                <button class="w3-btn w3-btn-floating w3-grey w3-ripple" ng-click="editCluster('restart')">
                     &#x21ba;</button>
             </td>
             <td ng-if="c.Country == 'UK'">
-                <button class="w3-btn w3-btn-floating w3-yellow w3-ripple" ng-click="editContainer('delete')">
+                <button class="w3-btn w3-btn-floating w3-yellow w3-ripple" ng-click="editCluster('delete')">
                     &#x2718;</button>
             </td>
         </tr>
     </table>
 </div>
 <script>
-    var app = angular.module('containerInfoApp', []);
-    app.controller('containerCtrl', function ($scope, $http) {
+    var app = angular.module('clusterInfoApp', []);
+    app.controller('clusterCtrl', function ($scope, $http) {
         $http.get("http://www.w3schools.com/angular/customers.php")
             .then(function (response) {
-                $scope.containers = response.data.records;
+                $scope.clusters = response.data.records;
             });
         /* TODO
-         /*For each container check the status {{c.status}} attribute in ng-if and set the right icons*/
+         /*For each cluster check the status {{c.status}} attribute in ng-if and set the right icons*/
 
-        $scope.editContainer = function (status) {
+        $scope.editCluster = function (status) {
             if (status == 'start') {
                 /*TODO: http request to server*/
             } else if (status == 'stop') {
