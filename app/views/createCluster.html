@@ -34,18 +34,18 @@
             </div>
             <table class="w3-table w3-bordered w3-striped">
                 <tr class="w3-grey">
-                    <th></th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Number</th>
+                    <th></th>
                 </tr>
                 <tr ng-repeat="c in images | orderBy : 'Name'">
-                    <td><input type="checkbox" ng-model="imageCheckBox" ng-change="checkBoxStateChanged(c, num)"></td>
                     <td>{{ c.Name }}</td>
                     <td>{{ c.Country }}</td>
-                    <td><input ng-model="num" class="w3-input w3-animate-input" type="number" min="1"
-                               ng-init="0"
+                    <td><input ng-model="num" class="w3-input w3-animate-input" type="number" min="0"
+                               ng-change="numberChanged(c.Name, num)"
                                style="width:30%"></td>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -55,19 +55,60 @@
     var app = angular.module('createCluster', []);
     app.controller('createClusterCtrl', function ($scope, $http) {
 
+        $scope.selectionMap = {};
         $scope.spinnerIcon = {'visibility': 'hidden'};
-        $scope.createRequest = '';
 
+        function ContainerInfo(name, count) {
+            this.name = name;
+            this.count = count;
+        }
+
+        // get images
         $http.get("http://www.w3schools.com/angular/customers.php")
             .then(function (response) {
                 $scope.images = response.data.records;
             });
 
-        $scope.checkBoxStateChanged = function (name, count) {
-            if ($scope.imageCheckBox) {
-                $scope.imagename = name + "---" + count;
+        // add containers
+        $scope.numberChanged = function (name, count) {
+
+            if (count == 0 ) {
+                // remove from the map
+                delete $scope.selectionMap[name];
+            } else {
+                // add to the map
+                $scope.selectionMap[name] = count;
             }
         }
+
+        // TODO: create the json array from the selectionMap and send it to server
+        $scope.createCluster = function() {
+            var containerInfoJSONArray= [];
+            for (var key in $scope.selectionMap) {
+                if ($scope.selectionMap.hasOwnProperty(key)) {
+                    console.log(key + " -> " + $scope.selectionMap[key]);
+                    var containerInfoJson = new ContainerInfo(key, $scope.selectionMap[key]);
+                    containerInfoJSONArray.push(containerInfoJson);
+                }
+            }
+
+            console.log(JSON.stringify(containerInfoJSONArray));
+
+//            $http({
+//                method: 'POST',
+//                url: 'http://localhost:3000/crud/createCluster',
+//                data: JSON.stringify(containerInfoJSONArray),   // TODO: FIX ME
+//                headers: {'Content-Type': 'application/json'}
+//            }).success(function(data, status, headers, config) {
+//                // this callback will be called asynchronously
+//                // when the response is available
+//                log.console(data);
+//            }).
+//            error(function(data, status, headers, config) {
+//                // called asynchronously if an error occurs
+//                // or server returns response with an error status.
+//            });
+        };
     });
 </script>
 </body>
