@@ -26,8 +26,8 @@
     <br/>
     <table class="w3-table w3-bordered w3-striped">
         <tr class="w3-grey">
-            <th>ID</th>
             <th>Name</th>
+            <th>Containers</th>
             <th>Status</th>
             <th>Operation</th>
             <th></th>
@@ -35,9 +35,9 @@
             <th></th>
         </tr>
         <tr ng-repeat="c in clusters | orderBy : 'Name'">
-            <td>{{ c.Name }}</td>
-            <td>{{ c.Country }}</td>
-            <td>{{ c.City }}</td>
+            <td>{{ c.ClusterName }}</td>
+            <td>{{ c.ContainerList }}</td>
+            <td>{{ c.State }}</td>
             <!-- FIX ng-if conditions the current ones are for test -->
             <td ng-if="c.Country == 'Germany'">
                 <button class="w3-btn w3-btn-floating w3-green  w3-ripple" ng-click="editCluster('start')">
@@ -61,10 +61,25 @@
 <script>
     var app = angular.module('clusterInfoApp', []);
     app.controller('clusterCtrl', function ($scope, $http) {
+        /*
         $http.get("http://www.w3schools.com/angular/customers.php")
             .then(function (response) {
                 $scope.clusters = response.data.records;
             });
+        */
+        $http({
+            method: 'POST',
+            url: 'http://localhost:3000/cluster/getClusters',
+            data: {},
+            headers: {'Content-Type': 'application/json'}
+        }).success(function (data, status, headers, config) {
+            // this callback will be called asynchronously
+            // when the response is available
+            $scope.clusters = data.ClusterList;
+        }).error(function (data, status, headers, config) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
         /* TODO
          /*For each cluster check the status {{c.status}} attribute in ng-if and set the right icons*/
 

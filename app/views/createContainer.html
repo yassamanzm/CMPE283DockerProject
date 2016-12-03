@@ -33,12 +33,12 @@
                     <th></th>
                     <th></th>
                 </tr>
-                <tr ng-repeat="c in images | orderBy : 'Name'">
-                    <td>{{ c.Name}}</td>
-                    <td>{{ c.Country }}</td>
+                <tr ng-repeat="c in images | orderBy : 'ImageName'">
+                    <td>{{ c.ImageName}}</td>
+                    <td>{{ c.ImageTag }}</td>
                     <td>
                         <button class="w3-btn w3-btn-floating w3-teal  w3-ripple"
-                                ng-click="createContainer(c.Name, c.Country)">&#x27a4;</button>
+                                ng-click="createContainer(c.ImageName, c.ImageTag)">&#x27a4;</button>
                     </td>
                     <td><i ng-style="spinnerIcon" class="fa fa-spinner fa-spin"
                            style="font-size:24px;color:darkslategrey"></i></td>
@@ -52,11 +52,26 @@
     app.controller('createContainerCtrl', function ($scope, $http) {
         $scope.isCreating = false;
         $scope.spinnerIcon = {'visibility': 'hidden'};
-
+/*
         $http.get("http://www.w3schools.com/angular/customers.php")
             .then(function (response) {
                 $scope.images = response.data.records;
             });
+*/
+        $http({
+            method: 'POST',
+            url: 'http://localhost:3000/crud/listImages',
+            data: {},
+            headers: {'Content-Type': 'application/json'}
+        }).success(function (data, status, headers, config) {
+            // this callback will be called asynchronously
+            // when the response is available
+            $scope.images = data.ImageList;
+        }).error(function (data, status, headers, config) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
+
 
         $scope.createContainer = function (name, tag) {
             $scope.isCreating = true;

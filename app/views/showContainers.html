@@ -38,12 +38,12 @@
             <th></th>
         </tr>
         <tr ng-repeat="c in containers | orderBy : 'Name'">
+            <td>{{ c.Id }}</td>
             <td>{{ c.Name }}</td>
-            <td>{{ c.Country }}</td>
-            <td>{{ c.Country }}</td>
-            <td>{{ c.Name }}</td>
-            <td>{{ c.Country }}</td>
-            <td>{{ c.Country }}</td>
+            <td>{{ c.Image }}</td>
+            <td>{{ c.Command }}</td>
+            <td>{{ c.Port[0].Type }}</td>
+            <td>{{ c.Status }}</td>
             <td ng-if="c.Country == 'Germany'">
                 <button class="w3-btn w3-btn-floating w3-green  w3-ripple" ng-click="editContainer('start')">
                     &#x25ba;</button>
@@ -66,10 +66,20 @@
 <script>
     var app = angular.module('containerInfoApp', []);
     app.controller('containerCtrl', function ($scope, $http) {
-        $http.get("http://www.w3schools.com/angular/customers.php")
-            .then(function (response) {
-                $scope.containers = response.data.records;
-            });
+
+        $http({
+            method: 'POST',
+            url: 'http://localhost:3000/crud/listContainers',
+            data: {},
+            headers: {'Content-Type': 'application/json'}
+        }).success(function (data, status, headers, config) {
+            // this callback will be called asynchronously
+            // when the response is available
+            $scope.containers = data.ContainerList;
+        }).error(function (data, status, headers, config) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
         /* TODO
          /*For each container check the status {{c.status}} attribute in ng-if and set the right icons*/
 
