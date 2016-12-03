@@ -22,6 +22,7 @@
     <br/>
 
     <div align="center">
+        <b>Cluster name:</b> <input class="w3-border w3-round" type="text" ng-model="clustername">
         <button class="w3-btn w3-teal w3-ripple w3-round" ng-click="createCluster()">Create &#x27a4;</button>
         <i ng-style="spinnerIcon" class="fa fa-spinner fa-spin"
            style="font-size:24px;color:darkslategrey"></i>
@@ -34,14 +35,16 @@
             </div>
             <table class="w3-table w3-bordered w3-striped">
                 <tr class="w3-grey">
-                    <th>Name</th>
-                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Container Name</th>
                     <th>Number</th>
                     <th></th>
                 </tr>
                 <tr ng-repeat="c in images | orderBy : 'Name'">
                     <td>{{ c.Name }}</td>
-                    <td>{{ c.Country }}</td>
+                    <td><input ng-model="containerName" class="w3-input w3-animate-input" type="text"
+                               ng-change="containerNameChanged(c.Name, containerName)"
+                               style="width:30%"></td></td>
                     <td><input ng-model="num" class="w3-input w3-animate-input" type="number" min="0"
                                ng-change="numberChanged(c.Name, num)"
                                style="width:30%"></td>
@@ -55,12 +58,14 @@
     var app = angular.module('createCluster', []);
     app.controller('createClusterCtrl', function ($scope, $http) {
 
-        $scope.selectionMap = {};
+        $scope.countMap = {};
+        $scope.nameMap = {};
         $scope.spinnerIcon = {'visibility': 'hidden'};
 
-        function ContainerInfo(name, count) {
-            this.name = name;
+        function ContainerInfo(imageName, count, name) {
+            this.imageName = imageName;
             this.count = count;
+            this.name = name;
         }
 
         // get images
@@ -69,27 +74,44 @@
                 $scope.images = response.data.records;
             });
 
-        // add containers
-        $scope.numberChanged = function (name, count) {
-
+        // add container counts
+        $scope.numberChanged = function (imageName, count) {
+            console.log(imageName + "--- " + count);
             if (count == 0 ) {
                 // remove from the map
-                delete $scope.selectionMap[name];
+                delete $scope.countMap[imageName];
             } else {
-                // add to the map
-                $scope.selectionMap[name] = count;
+                // add or modify the map
+                $scope.countMap[imageName] = count;
             }
+        }
+
+        // store container names
+        $scope.containerNameChanged = function (imageName, cName) {
+            // add or modify the map
+            console.log(imageName + "**** " + cName);
+            $scope.nameMap[imageName] = cName;
         }
 
         // TODO: create the json array from the selectionMap and send it to server
         $scope.createCluster = function() {
             var containerInfoJSONArray= [];
-            for (var key in $scope.selectionMap) {
-                if ($scope.selectionMap.hasOwnProperty(key)) {
-                    console.log(key + " -> " + $scope.selectionMap[key]);
-                    var containerInfoJson = new ContainerInfo(key, $scope.selectionMap[key]);
-                    containerInfoJSONArray.push(containerInfoJson);
+            for (var key in $scope.countMap) {
+                var contName= "noname";
+                var contNum= 0;
+                if ($scope.countMap.hasOwnProperty(key)) {
+                    console.log(key + " -> " + $scope.countMap[key]);
+                    contNum = $scope.countMap[key];
                 }
+
+                if ($scope.nameMap.hasOwnProperty(key)) {
+                    console.log(key + " -> " + $scope.nameMap[key]);
+                    contName = $scope.nameMap[key];
+                }
+
+                var containerInfoJson = new ContainerInfo(key, contNum, contName);
+                containerInfoJSONArray.push(containerInfoJson);
+                console.log("cluster name: " + $scope.clustername);
             }
 
             console.log(JSON.stringify(containerInfoJSONArray));
