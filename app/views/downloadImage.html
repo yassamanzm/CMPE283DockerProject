@@ -45,7 +45,7 @@
                     <td>{{ c.description }}</td>
                     <td>
                         <button class="w3-btn w3-btn-floating w3-teal  w3-ripple"
-                                ng-click="download(c.name, 'latest')">&#x2b73;</button>
+                                ng-click="downloadImage(c.name, 'latest')">&#x2b73;</button>
                     </td>
                     <td><i ng-style="downloadSpinnerIcon" class="fa fa-spinner fa-spin"
                            style="font-size:24px;color:darkslategrey"></i></td>
@@ -78,6 +78,25 @@
                 // or server returns response with an error status.
             });
         };
+
+        $scope.downloadImage = function (name, tag) {
+            $http({
+                method: 'POST',
+                url: 'http://localhost:3000/crud/createImage',
+                data: {'ContainerName': name, 'ContainerTag' : tag},
+                headers: {'Content-Type': 'application/json'}
+            }).success(function (data, status, headers, config) {
+                // this callback will be called asynchronously
+                // when the response is available
+                //$scope.images = data;
+                //log.console(data);
+                alert(data);
+            }).error(function (data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                alert("ERROR in Creating Image");
+            });
+        }
     });
 </script>
 </body>

@@ -78,7 +78,8 @@
                      */
                     function generateChartData() {
                         var chartData = [];
-
+                        //08caa2ca888bcb0c22b528069be5871495cf3c72b39f656390a560a430952820
+                        /*
                         $http.get("http://www.w3schools.com/angular/customers.php")
                             .then(function (response) {
                                 if (response.data.records[0].Country == "Germany") {
@@ -91,7 +92,25 @@
                                 }
                                 console.log("*** generateChartData- visits: " + visits);
                             });
-
+                        */
+                        $http({
+                            method: 'POST',
+                            url: 'http://localhost:3000/crud/getCpuStats',
+                            data: {'ContainerId' : '08caa2ca888bcb0c22b528069be5871495cf3c72b39f656390a560a430952820'},
+                            headers: {'Content-Type': 'application/json'}
+                        }).success(function (data, status, headers, config) {
+                            // this callback will be called asynchronously
+                            // when the response is available
+                            //$scope.images = data.ImageList;
+                            var newDate = new Date();
+                            chartData.push({
+                                date : newDate,
+                                visits : data.CPU
+                            })
+                        }).error(function (data, status, headers, config) {
+                            // called asynchronously if an error occurs
+                            // or server returns response with an error status.
+                        });
                         return chartData;
                     }
 
@@ -147,6 +166,7 @@
                             // load new datapoints here,
                             var newDate = new Date();
                             var visits = -1;
+                            /*
                             $http.get("http://www.w3schools.com/angular/customers.php")
                                 .then(function (response) {
                                     if (response.data.records[0].Country == "Germany") {
@@ -159,6 +179,25 @@
                                     }
                                     console.log("*** chart.dataProvider- visits: " + visits);
                                 });
+                                */
+                            $http({
+                                method: 'POST',
+                                url: 'http://localhost:3000/crud/getCpuStats',
+                                data: {'ContainerId' : '08caa2ca888bcb0c22b528069be5871495cf3c72b39f656390a560a430952820'},
+                                headers: {'Content-Type': 'application/json'}
+                            }).success(function (data, status, headers, config) {
+                                // this callback will be called asynchronously
+                                // when the response is available
+                                //$scope.images = data.ImageList;
+                                var newDate = new Date();
+                                chart.dataProvider.push({
+                                    date : newDate,
+                                    visits : data.CPU
+                                })
+                            }).error(function (data, status, headers, config) {
+                                // called asynchronously if an error occurs
+                                // or server returns response with an error status.
+                            });
                             chart.validateData();
                         }, 1000);
                     };
@@ -189,7 +228,7 @@
                             .then(function (response) {
                                 if (response.data.records[0].Country == "Germany") {
                                     var newDate = new Date();
-                                    var visits = Math.round(Math.random() * 40) - 10
+                                    var visits = Math.round(Math.random() * 40) - 10;
                                     chartData.push({
                                         date: newDate,
                                         visits: visits
