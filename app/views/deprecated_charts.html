@@ -62,9 +62,20 @@
         };
     });
 
+    //    var memoryChartData = [];
+    //    app.controller('chartCtrl', function ($scope, $http) {
+    //        $http.get("http://www.w3schools.com/angular/customers.php")
+    //            .then(function (response) {
+    //                memoryChartData.push({
+    //                    "date": newDate,
+    //                    "visits": visits
+    //                });
+    //            });
+    //    });
+
     /*CPU Graph*/
-    chartAppVar.directive('cpuChart', ['$http',
-        function ($http) {
+    chartAppVar.directive('cpuChart',
+        function () {
             return {
                 restrict: 'E',
                 replace: true,
@@ -73,24 +84,35 @@
                 link: function (scope, element, attrs) {
 
                     var chart = false;
+
                     /**
-                     * Function that generates data
+                     * Init some variables for demo purposes
+                     */
+                    var day = 0;
+                    var firstDate = new Date();
+                    firstDate.setDate(firstDate.getDate() - 500);
+
+                    /**
+                     * Function that generates random data
                      */
                     function generateChartData() {
                         var chartData = [];
+                        for (day = 0; day < 50; day++) {
+                            var newDate = new Date(firstDate);
+                            newDate.setDate(newDate.getDate() + day);
 
-                        $http.get("http://www.w3schools.com/angular/customers.php")
-                            .then(function (response) {
-                                if (response.data.records[0].Country == "Germany") {
-                                    var newDate = new Date();
-                                    var visits = Math.round(Math.random() * 40) - 10
-                                    chartData.push({
-                                        date: newDate,
-                                        visits: visits
-                                    });
-                                }
-                                console.log("*** generateChartData- visits: " + visits);
+//                            $http.get("http://www.w3schools.com/angular/customers.php")
+//                                .then(function (response) {
+//                                    $scope.containers = response.data.records;
+//                                });
+
+                            var visits = Math.round(Math.random() * 40) - 20;
+
+                            chartData.push({
+                                "date": newDate,
+                                "visits": visits
                             });
+                        }
 
                         return chartData;
                     }
@@ -112,7 +134,7 @@
                             "categoryField": "date",
                             "categoryAxis": {
                                 "parseDates": true,
-                                "minPeriod": "ss",
+                                "minPeriod": "DD",
                                 "dashLength": 1,
                                 "gridAlpha": 0.15,
                                 "axisColor": "#DADADA"
@@ -144,21 +166,23 @@
                          */
                         // set up the chart to update every second
                         setInterval(function () {
-                            // load new datapoints here,
-                            var newDate = new Date();
-                            var visits = -1;
-                            $http.get("http://www.w3schools.com/angular/customers.php")
-                                .then(function (response) {
-                                    if (response.data.records[0].Country == "Germany") {
-                                        newDate = new Date();
-                                        visits = Math.round(Math.random() * 40) - 10
-                                        chart.dataProvider.push({
-                                            date: newDate,
-                                            visits: visits
-                                        });
-                                    }
-                                    console.log("*** chart.dataProvider- visits: " + visits);
-                                });
+                            // normally you would load new datapoints here,
+                            // but we will just generate some random values
+                            // and remove the value from the beginning so that
+                            // we get nice sliding graph feeling
+
+                            // remove datapoint from the beginning
+                            chart.dataProvider.shift();
+
+                            // add new one at the end
+                            day++;
+                            var newDate = new Date(firstDate);
+                            newDate.setDate(newDate.getDate() + day);
+                            var visits = Math.round(Math.random() * 40) - 20;
+                            chart.dataProvider.push({
+                                date: newDate,
+                                visits: visits
+                            });
                             chart.validateData();
                         }, 1000);
                     };
@@ -166,11 +190,11 @@
 
                 }//end watch
             }
-        }]);
+        });
 
     /*Memory Graph*/
-    chartAppVar.directive('memoryChart',['$http',
-        function ($http) {
+    chartAppVar.directive('memoryChart',
+        function () {
             return {
                 restrict: 'E',
                 replace: true,
@@ -179,24 +203,35 @@
                 link: function (scope, element, attrs) {
 
                     var chart = false;
+
                     /**
-                     * Function that generates data
+                     * Init some variables for demo purposes
+                     */
+                    var day = 0;
+                    var firstDate = new Date();
+                    firstDate.setDate(firstDate.getDate() - 500);
+
+                    /**
+                     * Function that generates random data
                      */
                     function generateChartData() {
                         var chartData = [];
+                        for (day = 0; day < 50; day++) {
+                            var newDate = new Date(firstDate);
+                            newDate.setDate(newDate.getDate() + day);
 
-                        $http.get("http://www.w3schools.com/angular/customers.php")
-                            .then(function (response) {
-                                if (response.data.records[0].Country == "Germany") {
-                                    var newDate = new Date();
-                                    var visits = Math.round(Math.random() * 40) - 10
-                                    chartData.push({
-                                        date: newDate,
-                                        visits: visits
-                                    });
-                                }
-                                console.log("*** generateChartData- visits: " + visits);
+//                            $http.get("http://www.w3schools.com/angular/customers.php")
+//                                .then(function (response) {
+//                                    $scope.containers = response.data.records;
+//                                });
+
+                            var visits = Math.round(Math.random() * 40) - 20;
+
+                            chartData.push({
+                                "date": newDate,
+                                "visits": visits
                             });
+                        }
 
                         return chartData;
                     }
@@ -218,7 +253,7 @@
                             "categoryField": "date",
                             "categoryAxis": {
                                 "parseDates": true,
-                                "minPeriod": "ss",
+                                "minPeriod": "DD",
                                 "dashLength": 1,
                                 "gridAlpha": 0.15,
                                 "axisColor": "#DADADA"
@@ -250,21 +285,23 @@
                          */
                         // set up the chart to update every second
                         setInterval(function () {
-                            // load new datapoints here,
-                            var newDate = new Date();
-                            var visits = -1;
-                            $http.get("http://www.w3schools.com/angular/customers.php")
-                                .then(function (response) {
-                                    if (response.data.records[0].Country == "Germany") {
-                                        newDate = new Date();
-                                        visits = Math.round(Math.random() * 40) - 10
-                                        chart.dataProvider.push({
-                                            date: newDate,
-                                            visits: visits
-                                        });
-                                    }
-                                    console.log("*** chart.dataProvider- visits: " + visits);
-                                });
+                            // normally you would load new datapoints here,
+                            // but we will just generate some random values
+                            // and remove the value from the beginning so that
+                            // we get nice sliding graph feeling
+
+                            // remove datapoint from the beginning
+                            chart.dataProvider.shift();
+
+                            // add new one at the end
+                            day++;
+                            var newDate = new Date(firstDate);
+                            newDate.setDate(newDate.getDate() + day);
+                            var visits = Math.round(Math.random() * 40) - 20;
+                            chart.dataProvider.push({
+                                date: newDate,
+                                visits: visits
+                            });
                             chart.validateData();
                         }, 1000);
                     };
@@ -272,6 +309,6 @@
 
                 }//end watch
             }
-        }]);
+        });
 </script>
 </body>
